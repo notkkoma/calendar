@@ -4,19 +4,63 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@android:color/holo_blue_light">
+    android:background="@android:color/white">
 
-    <TextView
-        android:id="@+id/widget_text"
-        android:layout_width="wrap_content"
+    <!-- 월 이름과 이전/다음 버튼 -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello, Widget!"
-        android:textSize="16sp"
-        android:textColor="@android:color/white" />
+        android:orientation="horizontal"
+        android:gravity="center">
 
-    <Button
-        android:id="@+id/widget_button"
-        android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/prev_month_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Prev" />
+
+        <TextView
+            android:id="@+id/current_month_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="October 2024"
+            android:textSize="18sp"
+            android:padding="8dp"
+            android:layout_gravity="center"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/next_month_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next" />
+    </LinearLayout>
+
+    <!-- 날짜를 위한 그리드 -->
+    <GridLayout
+        android:id="@+id/calendar_grid"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Click Me" />
+        android:rowCount="7"
+        android:columnCount="7"
+        android:padding="8dp">
+        <!-- 요일 헤더 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:text="Sun"
+            android:gravity="center"
+            android:textColor="@android:color/black" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:text="Mon"
+            android:gravity="center"
+            android:textColor="@android:color/black" />
+        <!-- 다른 요일도 동일하게 추가 -->
+
+        <!-- 날짜를 동적으로 추가할 수 있음 -->
+    </GridLayout>
 </LinearLayout>
