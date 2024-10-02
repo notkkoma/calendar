@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@android:color/white">
+    android:padding="8dp"
+    android:background="@android:color/transparent">
 
     <!-- 월 이름과 이전/다음 버튼 -->
     <LinearLayout
@@ -36,31 +36,356 @@
             android:text="Next" />
     </LinearLayout>
 
-    <!-- 날짜를 위한 그리드 -->
+    <!-- 요일 헤더 -->
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rowCount="1"
+        android:columnCount="7"
+        android:layout_margin="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="일"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_red_dark" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="월"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="화"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="수"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="목"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="금"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="토"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_blue_dark" />
+    </GridLayout>
+
+    <!-- 날짜 표시 그리드 -->
     <GridLayout
         android:id="@+id/calendar_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:rowCount="7"
+        android:rowCount="5"
         android:columnCount="7"
-        android:padding="8dp">
-        <!-- 요일 헤더 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:text="Sun"
-            android:gravity="center"
-            android:textColor="@android:color/black" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1"
-            android:text="Mon"
-            android:gravity="center"
-            android:textColor="@android:color/black" />
-        <!-- 다른 요일도 동일하게 추가 -->
+        android:layout_margin="8dp"
+        android:gravity="center">
 
-        <!-- 날짜를 동적으로 추가할 수 있음 -->
+        <TextView
+            android:id="@+id/day1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_red_dark" />
+
+        <TextView
+            android:id="@+id/day2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_blue_dark" />
+
+        <TextView
+            android:id="@+id/day8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_red_dark" />
+
+        <TextView
+            android:id="@+id/day9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day14"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_blue_dark" />
+
+        <TextView
+            android:id="@+id/day15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_red_dark" />
+
+        <TextView
+            android:id="@+id/day16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day17"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day19"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_blue_dark" />
+
+        <TextView
+            android:id="@+id/day22"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_red_dark" />
+
+        <TextView
+            android:id="@+id/day23"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day25"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day26"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day27"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day28"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_blue_dark" />
+
+        <TextView
+            android:id="@+id/day29"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_red_dark" />
+
+        <TextView
+            android:id="@+id/day30"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day31"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day32"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day33"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day34"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/day35"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_columnWeight="1"
+            android:textColor="@android:color/holo_blue_dark" />
+
     </GridLayout>
 </LinearLayout>
