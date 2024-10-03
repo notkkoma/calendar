@@ -55,12 +55,10 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
         // 달력의 첫 번째 날짜 계산
         Calendar tempCalendar = (Calendar) calendar.clone();
         tempCalendar.set(Calendar.DAY_OF_MONTH, 1);
-        Log.d("&&&Line58", String.valueOf(tempCalendar.get(Calendar.DAY_OF_MONTH)));
 
         // 달력 첫 번째 주의 첫 번째 요일 계산
         int firstDayOfWeek = tempCalendar.get(Calendar.DAY_OF_WEEK);
         tempCalendar.add(Calendar.DAY_OF_MONTH, - (firstDayOfWeek - 1));
-        Log.d("&&&Line63", String.valueOf(firstDayOfWeek));
 
         // 35개의 셀 (5주 * 7일)을 반복하면서 날짜를 채워넣음
         for (int i = 0; i < 35; i++) {
@@ -70,7 +68,6 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
 
             // 날짜 설정
             views.setTextViewText(dayResId, String.valueOf(tempCalendar.get(Calendar.DAY_OF_MONTH)));
-            Log.d("&&&Line73", String.valueOf(tempCalendar.get(Calendar.DAY_OF_MONTH)));
 
             // 다음 날짜로 이동
             tempCalendar.add(Calendar.DAY_OF_MONTH, 1);
