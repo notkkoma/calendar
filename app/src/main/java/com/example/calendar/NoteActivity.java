@@ -46,7 +46,6 @@ public class NoteActivity extends AppCompatActivity {
         // 날짜별로 메모를 저장
         editor.putString(selectedDate, noteEditText.getText().toString());
         editor.apply();
-        Log.d("&&&NoteActivity Line49&&&", selectedDate+" "+noteEditText.getText().toString());
 
         // 저장 후 액티비티 종료
         finish();
@@ -59,7 +58,5 @@ public class NoteActivity extends AppCompatActivity {
         // 선택한 날짜의 메모가 있으면 불러와서 EditText에 설정
         String savedNote = sharedPreferences.getString(selectedDate, "");
         noteEditText.setText(savedNote);
-
-        Log.d("&&&NoteActivity Line63&&&", selectedDate+" "+savedNote);
     }
 }

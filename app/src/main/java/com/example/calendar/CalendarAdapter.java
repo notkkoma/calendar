@@ -49,12 +49,10 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
             // 날짜에 메모가 있는지 확인
             String note = sharedPreferences.getString(selectedDate, "");
             if (!note.isEmpty()) {
-                Log.d("&&&CalendarAdapter Line47&&&", selectedDate + " " + note);
                 holder.dayOfMonth.setText(date + " *");  // 메모가 있는 날짜에 * 표시
                 holder.cardView.setCardBackgroundColor(Color.YELLOW);  // 배경색 변경
             } else {
                 // 메모가 없으면 기본 색상으로 설정
-                Log.d("&&&CalendarAdapter Line47&&&", selectedDate + " " + note);
                 holder.cardView.setCardBackgroundColor(Color.WHITE);
             }
         }
