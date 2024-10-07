@@ -1,10 +1,12 @@
 package com.example.calendar;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class CalendarDB extends SQLiteOpenHelper {
 
@@ -27,7 +29,8 @@ public class CalendarDB extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // 테이블 생성
         String CREATE_TABLE = "CREATE TABLE calendar ( " +
-                "date TEXT PRIMARY KEY, " + // 날짜 (YYYY-MM-DD)
+                "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "date TEXT, " + // 날짜 (YYYY-MM-DD)
                 "note TEXT, " + // 근무형태 및 노트 (근무 형태 사용자 추가 가능하도록)
                 "holiday BOOLEAN)";
         db.execSQL(CREATE_TABLE);
@@ -59,7 +62,7 @@ public class CalendarDB extends SQLiteOpenHelper {
                 new String[] { date }, null, null, null, null);
 
         if (cursor != null) {
-            if(cursor.moveToFirst()){
+            if (cursor.moveToFirst()){
                 String note = cursor.getString(0);
                 cursor.close();
                 return note;
@@ -83,5 +86,21 @@ public class CalendarDB extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete("calendar", "date = ?", new String[] { date });
         db.close();
+    }
+
+    public void logAllNotes() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + "calendar", null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex("ID"));
+                @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex("date"));
+                @SuppressLint("Range") String note = cursor.getString(cursor.getColumnIndex("note"));
+                Log.d("CalendarDB", "★ " + "ID: " + id + ", Date: " + date + ", Note: " + note);
+            }
+            cursor.close(); // 커서 닫기
+        }
+        //db.close(); // 데이터베이스 닫기
     }
 }

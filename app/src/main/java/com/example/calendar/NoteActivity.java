@@ -34,22 +34,27 @@ public class NoteActivity extends AppCompatActivity {
         // 불러오기
         String savedNote = db.loadNote(selectedDate);
         noteEditText.setText(savedNote);
+        db.logAllNotes();
 
         // 업데이트 및 저장
         saveButton.setOnClickListener(v -> {
             String note = noteEditText.getText().toString();
-            if (savedNote != null) {
+            if (savedNote != null && !savedNote.isEmpty()) {
                 db.updateNote(selectedDate, note);
-            }else{
+                db.logAllNotes();
+            }
+            else{
                 db.addNote(selectedDate, note);
+                db.logAllNotes();
             }
             finish(); // 저장 후 종료
         });
 
         // 삭제
         deleteButton.setOnClickListener(v -> {
-            if (savedNote != null) {
+            if (savedNote != null && !savedNote.isEmpty()) {
                 db.deleteNote(selectedDate);
+                db.logAllNotes();
             }
             finish(); // 삭제 후 종료
         });
