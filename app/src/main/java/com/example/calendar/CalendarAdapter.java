@@ -1,7 +1,6 @@
 package com.example.calendar;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,13 +17,13 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
 
     private ArrayList<String> daysOfMonth;
     private OnItemListener onItemListener;
-    private SharedPreferences sharedPreferences;
     private String selectedDate;
+    private CalendarDB db;
 
     public CalendarAdapter(ArrayList<String> daysOfMonth, OnItemListener onItemListener, Context context) {
         this.daysOfMonth = daysOfMonth;
         this.onItemListener = onItemListener;
-        this.sharedPreferences = context.getSharedPreferences("MyNotes", Context.MODE_PRIVATE);
+        db = new CalendarDB(context);
     }
 
     @NonNull
@@ -47,8 +46,8 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
         // 날짜가 빈 셀("")이 아닐 때만 처리
         if (!date.isEmpty()) {
             // 날짜에 메모가 있는지 확인
-            String note = sharedPreferences.getString(selectedDate, "");
-            if (!note.isEmpty()) {
+            String note = db.loadNote(selectedDate);
+            if (note != null && !note.isEmpty()) {
                 holder.dayOfMonth.setText(date + " *");  // 메모가 있는 날짜에 * 표시
                 holder.cardView.setCardBackgroundColor(Color.YELLOW);  // 배경색 변경
             } else {
