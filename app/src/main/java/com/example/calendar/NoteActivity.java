@@ -1,5 +1,6 @@
 package com.example.calendar;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,29 +34,30 @@ public class NoteActivity extends AppCompatActivity {
 
         // 불러오기
         String savedNote = db.loadNote(selectedDate);
+        Log.d("NoteActivity", "★ "+"loadNote Called: " + selectedDate + ", " + savedNote);
         noteEditText.setText(savedNote);
         db.logAllNotes();
 
         // 업데이트 및 저장
         saveButton.setOnClickListener(v -> {
+            Log.d("NoteActivity", "★ " + "AddNote Called");
             String note = noteEditText.getText().toString();
-            if (savedNote != null && !savedNote.isEmpty()) {
-                db.updateNote(selectedDate, note);
-                db.logAllNotes();
-            }
-            else{
-                db.addNote(selectedDate, note);
-                db.logAllNotes();
-            }
+            db.addNote(selectedDate, note);
+            db.logAllNotes();
+            Intent resultIntent = new Intent();
+            setResult(RESULT_OK, resultIntent);
             finish(); // 저장 후 종료
         });
 
         // 삭제
         deleteButton.setOnClickListener(v -> {
             if (savedNote != null && !savedNote.isEmpty()) {
+                Log.d("NoteActivity", "★ " + "DeleteNote Called");
                 db.deleteNote(selectedDate);
                 db.logAllNotes();
             }
+            Intent resultIntent = new Intent();
+            setResult(RESULT_OK, resultIntent);
             finish(); // 삭제 후 종료
         });
     }

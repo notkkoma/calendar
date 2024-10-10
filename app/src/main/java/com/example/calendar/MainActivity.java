@@ -1,5 +1,6 @@
 package com.example.calendar;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +8,8 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,9 +55,16 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 
     @Override
     public void onItemClick(int position, String dayText) {
+        String day = null;
+        if (dayText.length() > 0) {
+            day = String.valueOf(dayText.charAt(0));  // 첫 번째 문자 추출
+        }
         // 날짜 클릭 시 NoteActivity로 이동
         Intent intent = new Intent(MainActivity.this, NoteActivity.class);
-        String selectedDate = getSelectedDateString(dayText);
+        noteActivityLauncher.launch(intent);
+
+        String selectedDate = getSelectedDateString(day);
+        Log.d("MainActivity", "★ "+"NoteActivity Called: " + selectedDate);
         intent.putExtra("selectedDate", selectedDate);
         startActivity(intent);
     }
@@ -100,4 +110,14 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 
         return daysList;
     }
+
+    private ActivityResultLauncher<Intent> noteActivityLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    // NoteActivity에서 저장 후 돌아왔을 때 처리
+                    updateCalendar(); // 필요한 업데이트 작업 수행
+                }
+            });
+
 }

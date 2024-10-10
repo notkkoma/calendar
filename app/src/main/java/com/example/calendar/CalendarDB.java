@@ -29,8 +29,7 @@ public class CalendarDB extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // 테이블 생성
         String CREATE_TABLE = "CREATE TABLE calendar ( " +
-                "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "date TEXT, " + // 날짜 (YYYY-MM-DD)
+                "date TEXT PRIMARY KEY, " + // 날짜 (YYYY-MM-DD)
                 "note TEXT, " + // 근무형태 및 노트 (근무 형태 사용자 추가 가능하도록)
                 "holiday BOOLEAN)";
         db.execSQL(CREATE_TABLE);
@@ -51,7 +50,9 @@ public class CalendarDB extends SQLiteOpenHelper {
         values.put("note", note);
         values.put("holiday", Boolean.FALSE);
 
-        db.insert("calendar", null, values);
+        // date가 중복되면 REPLACE (즉, update)
+        db.insertWithOnConflict("calendar", null, values, SQLiteDatabase.CONFLICT_REPLACE);
+
         db.close();
     }
 
@@ -61,25 +62,14 @@ public class CalendarDB extends SQLiteOpenHelper {
         Cursor cursor = db.query("calendar", new String[] { "note" }, "date = ?",
                 new String[] { date }, null, null, null, null);
 
-        if (cursor != null) {
-            if (cursor.moveToFirst()){
-                String note = cursor.getString(0);
-                cursor.close();
-                return note;
-            }
+        if (cursor != null && cursor.moveToFirst()) {
+            String note = cursor.getString(0);
+            cursor.close();
+            db.close();
+            return note;
         }
-
-        return null;
-    }
-
-    public void updateNote(String date, String newNote) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put("calendar", newNote);
-
-        db.update("calendar", values, "date = ?", new String[] { date });
         db.close();
+        return null;
     }
 
     public void deleteNote(String date) {
@@ -94,13 +84,13 @@ public class CalendarDB extends SQLiteOpenHelper {
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex("ID"));
                 @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex("date"));
                 @SuppressLint("Range") String note = cursor.getString(cursor.getColumnIndex("note"));
-                Log.d("CalendarDB", "★ " + "ID: " + id + ", Date: " + date + ", Note: " + note);
+                @SuppressLint("Range") String holiday = cursor.getString(cursor.getColumnIndex("holiday"));
+                Log.d("CalendarDB", "★ " + ", Date: " + date + ", Note: " + note + ", Holiday: " + holiday);
             }
             cursor.close(); // 커서 닫기
         }
-        //db.close(); // 데이터베이스 닫기
+        db.close(); // 데이터베이스 닫기
     }
 }
