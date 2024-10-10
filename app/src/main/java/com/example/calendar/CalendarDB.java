@@ -57,19 +57,30 @@ public class CalendarDB extends SQLiteOpenHelper {
     }
 
     public String loadNote(String date) {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query("calendar", new String[] { "note" }, "date = ?",
-                new String[] { date }, null, null, null, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            String note = cursor.getString(0);
-            cursor.close();
-            db.close();
-            return note;
+        // date가 null인 경우 처리
+        if (date == null) {
+            return null;  // 또는 적절한 에러 메시지 또는 기본값 반환
         }
-        db.close();
-        return null;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String note = null;  // 메모 초기화
+
+        // 쿼리 실행
+        Cursor cursor = db.query("calendar", new String[] { "note" }, "date = ?",
+                new String[] { date }, null, null, null);
+
+        // 커서가 null이 아니고, 첫 번째 요소로 이동 가능한 경우
+        if (cursor != null && cursor.moveToFirst()) {
+            note = cursor.getString(0);  // 메모 가져오기
+        }
+
+        // 리소스 정리
+        if (cursor != null) {
+            cursor.close();  // 커서 닫기
+        }
+        db.close();  // 데이터베이스 닫기
+
+        return note;  // 메모 반환
     }
 
     public void deleteNote(String date) {

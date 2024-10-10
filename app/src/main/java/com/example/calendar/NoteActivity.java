@@ -35,14 +35,16 @@ public class NoteActivity extends AppCompatActivity {
         // 불러오기
         String savedNote = db.loadNote(selectedDate);
         noteEditText.setText(savedNote);
-        db.logAllNotes();
+        //db.logAllNotes();
 
         // 업데이트 및 저장
         saveButton.setOnClickListener(v -> {
             String note = noteEditText.getText().toString();
             db.addNote(selectedDate, note);
-            db.logAllNotes();
+            //db.logAllNotes();
             Intent resultIntent = new Intent();
+            resultIntent.putExtra("selectedDate", selectedDate);
+            //Log.d("NoteActivity", "★ Selected date set L47: " + selectedDate);
             setResult(RESULT_OK, resultIntent);
             finish(); // 저장 후 종료
         });
@@ -51,9 +53,11 @@ public class NoteActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(v -> {
             if (savedNote != null && !savedNote.isEmpty()) {
                 db.deleteNote(selectedDate);
-                db.logAllNotes();
+                //db.logAllNotes();
             }
             Intent resultIntent = new Intent();
+            resultIntent.putExtra("selectedDate", selectedDate);
+            //Log.d("NoteActivity", "★ Selected date set L60: " + selectedDate);
             setResult(RESULT_OK, resultIntent);
             finish(); // 삭제 후 종료
         });
