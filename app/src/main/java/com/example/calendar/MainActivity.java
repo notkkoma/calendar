@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         noteActivityLauncher.launch(intent);
 
         String selectedDate = getSelectedDateString(day);
-        Log.d("MainActivity", "★ "+"NoteActivity Called: " + selectedDate);
         intent.putExtra("selectedDate", selectedDate);
         startActivity(intent);
     }
@@ -75,9 +74,14 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         String monthKey = new SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(calendar.getTime());
         monthText.setText(monthKey);
 
+        // "yyyy-MM" 형식에서 year와 month를 분리
+        String[] dateParts = monthKey.split("-");
+        int year = Integer.parseInt(dateParts[0]);
+        int month = Integer.parseInt(dateParts[1]);
+
         daysOfMonth = getDaysOfMonthArray();
 
-        CalendarAdapter calendarAdapter = new CalendarAdapter(daysOfMonth, this, this);
+        CalendarAdapter calendarAdapter = new CalendarAdapter(year, month, daysOfMonth, this, this);
         calendarRecyclerView.setLayoutManager(new GridLayoutManager(this, 7));  // 7열 그리드
         calendarRecyclerView.setAdapter(calendarAdapter);
     }

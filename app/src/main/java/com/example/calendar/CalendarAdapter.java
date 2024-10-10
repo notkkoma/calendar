@@ -15,12 +15,16 @@ import java.util.Calendar;
 
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHolder> {
 
+    private int year;
+    private int month;
     private ArrayList<String> daysOfMonth;
     private OnItemListener onItemListener;
     private String selectedDate;
     private CalendarDB db;
 
-    public CalendarAdapter(ArrayList<String> daysOfMonth, OnItemListener onItemListener, Context context) {
+    public CalendarAdapter(int year, int month, ArrayList<String> daysOfMonth, OnItemListener onItemListener, Context context) {
+        this.year = year;
+        this.month = month;
         this.daysOfMonth = daysOfMonth;
         this.onItemListener = onItemListener;
         db = new CalendarDB(context);
@@ -36,9 +40,6 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;  // 0이 1월이므로 +1
         String date = daysOfMonth.get(position);
         selectedDate = year + "-" + month + "-" + date;
         holder.dayOfMonth.setText(date);
