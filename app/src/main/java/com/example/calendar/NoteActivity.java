@@ -76,49 +76,10 @@ public class NoteActivity extends AppCompatActivity {
             }
         }
 
-        dayButton.setOnClickListener(v -> {
-            if (dayButton.isChecked()) {
-                String type = "주간";
-                db.addType(selectedDate, type);
-                dayButton.setBackgroundColor(ContextCompat.getColor(this, R.color.blue)); // 배경색을 파란색으로 변경
-            } else {
-                db.addType(selectedDate, null);
-                dayButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey)); // 배경색을 회색으로 변경
-            }
-        });
-
-        nightButton.setOnClickListener(v -> {
-            if (nightButton.isChecked()) {
-                String type = "야간";
-                db.addType(selectedDate, type);
-                nightButton.setBackgroundColor(ContextCompat.getColor(this, R.color.blue)); // 배경색을 파란색으로 변경
-            } else {
-                db.addType(selectedDate, null);
-                nightButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey)); // 배경색을 회색으로 변경
-            }
-        });
-
-        allButton.setOnClickListener(v -> {
-            if (allButton.isChecked()) {
-                String type = "전체";
-                db.addType(selectedDate, type);
-                allButton.setBackgroundColor(ContextCompat.getColor(this, R.color.blue)); // 배경색을 파란색으로 변경
-            } else {
-                db.addType(selectedDate, null);
-                allButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey)); // 배경색을 회색으로 변경
-            }
-        });
-
-        offButton.setOnClickListener(v -> {
-            if (offButton.isChecked()) {
-                String type = "비번";
-                db.addType(selectedDate, type);
-                offButton.setBackgroundColor(ContextCompat.getColor(this, R.color.blue)); // 배경색을 파란색으로 변경
-            } else {
-                db.addType(selectedDate, null);
-                offButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey)); // 배경색을 회색으로 변경
-            }
-        });
+        dayButton.setOnClickListener(v -> setSelectedButton(dayButton, "주간"));
+        nightButton.setOnClickListener(v -> setSelectedButton(nightButton, "야간"));
+        allButton.setOnClickListener(v -> setSelectedButton(allButton, "전체"));
+        offButton.setOnClickListener(v -> setSelectedButton(offButton, "비번"));
 
         // 업데이트 및 저장
         saveButton.setOnClickListener(v -> {
@@ -144,5 +105,27 @@ public class NoteActivity extends AppCompatActivity {
             setResult(RESULT_OK, resultIntent);
             finish(); // 삭제 후 종료
         });
+    }
+
+    // 선택된 버튼의 배경색을 변경하고 나머지 버튼의 선택을 해제하는 메소드
+    private void setSelectedButton(ToggleButton selectedButton, String type) {
+        dayButton.setChecked(selectedButton == dayButton);
+        nightButton.setChecked(selectedButton == nightButton);
+        allButton.setChecked(selectedButton == allButton);
+        offButton.setChecked(selectedButton == offButton);
+
+        // 각 버튼의 배경색을 초기화
+        dayButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey));
+        nightButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey));
+        allButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey));
+        offButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey));
+
+        // 선택된 버튼의 배경색을 변경
+        if (selectedButton.isChecked()) {
+            selectedButton.setBackgroundColor(ContextCompat.getColor(this, R.color.blue));
+            db.addType(selectedDate, type);
+        } else {
+            db.addType(selectedDate, null);
+        }
     }
 }
