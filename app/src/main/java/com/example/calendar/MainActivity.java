@@ -1,5 +1,6 @@
 package com.example.calendar;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,13 +50,13 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         // NoteActivity에서 선택한 날짜 가져오기
                         String selectedDate = result.getData().getStringExtra("selectedDate");
-                        //Log.d("MainActivity", "★ Selected date set L52: " + selectedDate);
+                        Log.d("MainActivity", "★ Selected date set L53: " + selectedDate);
                         if (selectedDate != null) {
                             // selectedDate를 Calendar 객체로 파싱
                             try {
                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                                 Date date = sdf.parse(selectedDate);
-                                Log.d("MainActivity", "★ Selected date set L58: " + date);
+                                Log.d("MainActivity", "★ Selected date set L59: " + selectedDate);
                                 if (date != null) {
                                     calendar.setTime(date);  // Calendar에 설정
                                 }
@@ -87,12 +88,14 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
     public void onItemClick(int position, String dayText) {
         String day = null;
         if (dayText.length() > 0) {
-            day = String.valueOf(dayText.charAt(0));  // 첫 번째 문자 추출
+            int dayInt = Integer.parseInt(dayText);
+            day = String.valueOf(dayInt);  // 첫 번째 문자 추출
         }
 
         // 날짜 클릭 시 NoteActivity로 이동
         String selectedDate = getSelectedDateString(day);  // 선택된 날짜를 생성
         Intent intent = new Intent(MainActivity.this, NoteActivity.class);
+        Log.d("MainActivity", "★ Selected date set L97: " + selectedDate);
         intent.putExtra("selectedDate", selectedDate);  // 선택된 날짜 전달
 
         // NoteActivity 시작
@@ -120,7 +123,9 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
     private String getSelectedDateString(String dayText) {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1;  // 0이 1월이므로 +1
-        return year + "-" + month + "-" + dayText;
+        int day = Integer.parseInt(dayText); // dayText를 int로 변환
+        @SuppressLint("DefaultLocale") String tmp = String.format("%02d", day);
+        return year + "-" + month + "-" + tmp;
     }
 
     // 해당 월의 ArrayList 계산 (비어있는 경우 빈셀)

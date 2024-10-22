@@ -1,5 +1,6 @@
 package com.example.calendar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -41,7 +42,16 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String date = daysOfMonth.get(position);
-        selectedDate = year + "-" + month + "-" + date;
+        //Log.d("CalendarActivity", "★ String date L45: " + date);
+
+        // 화면에는 1, DB에는 01
+        if(!date.isEmpty()){
+            int day = Integer.parseInt(date); // date를 int로 변환
+            @SuppressLint("DefaultLocale") String tmp = String.format("%02d", day);
+            selectedDate = year + "-" + month + "-" + tmp;
+            Log.d("CalendarActivity", "★ selectedDate L52: " + selectedDate);
+        }
+
         holder.dayOfMonth.setText(date);
 
         // 날짜가 빈 셀("")이 아닐 때만 처리
@@ -50,7 +60,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
             String note = db.loadNote(selectedDate);
             if (note != null && !note.isEmpty()) {
                 // 메모가 있으면 특수 색상으로 설정
-                holder.dayOfMonth.setText(date + " *");  // 메모가 있는 날짜에 * 표시
+                // holder.dayOfMonth.setText(date + " *");  // 메모가 있는 날짜에 * 표시
                 holder.cardView.setCardBackgroundColor(Color.YELLOW);  // 배경색 변경
             } else {
                 // 메모가 없으면 기본 색상으로 설정

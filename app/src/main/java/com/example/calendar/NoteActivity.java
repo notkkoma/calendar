@@ -56,20 +56,29 @@ public class NoteActivity extends AppCompatActivity {
         nightButton.setChecked(false);
         allButton.setChecked(false);
         offButton.setChecked(false);
+        // 각 버튼의 배경색을 초기화
+        dayButton.setBackgroundResource(R.drawable.toggle_off);
+        nightButton.setBackgroundResource(R.drawable.toggle_off);
+        allButton.setBackgroundResource(R.drawable.toggle_off);
+        offButton.setBackgroundResource(R.drawable.toggle_off);
         String savedType = db.loadType(selectedDate);
         if (savedType != null) {
             switch (savedType) {
                 case "주간":
                     dayButton.setChecked(true);
+                    dayButton.setBackgroundResource(R.drawable.toggle_on);
                     break;
                 case "야간":
                     nightButton.setChecked(true);
+                    nightButton.setBackgroundResource(R.drawable.toggle_on);
                     break;
                 case "전체":
                     allButton.setChecked(true);
+                    allButton.setBackgroundResource(R.drawable.toggle_on);
                     break;
                 case "비번":
                     offButton.setChecked(true);
+                    offButton.setBackgroundResource(R.drawable.toggle_on);
                     break;
                 default:
                     break;
@@ -115,16 +124,19 @@ public class NoteActivity extends AppCompatActivity {
         offButton.setChecked(selectedButton == offButton);
 
         // 각 버튼의 배경색을 초기화
-        dayButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey));
-        nightButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey));
-        allButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey));
-        offButton.setBackgroundColor(ContextCompat.getColor(this, R.color.grey));
+        dayButton.setBackgroundResource(R.drawable.toggle_off);
+        nightButton.setBackgroundResource(R.drawable.toggle_off);
+        allButton.setBackgroundResource(R.drawable.toggle_off);
+        offButton.setBackgroundResource(R.drawable.toggle_off);
 
         // 선택된 버튼의 배경색을 변경
         if (selectedButton.isChecked()) {
-            selectedButton.setBackgroundColor(ContextCompat.getColor(this, R.color.blue));
+            selectedButton.setChecked(true);
+            selectedButton.setBackgroundResource(R.drawable.toggle_on);
             db.addType(selectedDate, type);
         } else {
+            selectedButton.setChecked(false);
+            selectedButton.setBackgroundResource(R.drawable.toggle_off);
             db.addType(selectedDate, null);
         }
     }
