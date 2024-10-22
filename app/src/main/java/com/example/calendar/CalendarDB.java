@@ -30,7 +30,8 @@ public class CalendarDB extends SQLiteOpenHelper {
         // 테이블 생성
         String CREATE_TABLE = "CREATE TABLE calendar ( " +
                 "date TEXT PRIMARY KEY, " + // 날짜 (YYYY-MM-DD)
-                "note TEXT, " + // 근무형태 및 노트 (근무 형태 사용자 추가 가능하도록)
+                "type TEXT," + // 근무형태
+                "note TEXT, " + // 메모
                 "holiday BOOLEAN)";
         db.execSQL(CREATE_TABLE);
     }
@@ -45,8 +46,26 @@ public class CalendarDB extends SQLiteOpenHelper {
     public void addNote(String date, String note) {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        // 저장된 근무형태 불러오기
+        String type = null;  // 근무형태 초기화
+
+        // 쿼리 실행
+        Cursor cursor = db.query("calendar", new String[] { "type" }, "date = ?",
+                new String[] { date }, null, null, null);
+
+        // 커서가 null이 아니고, 첫 번째 요소로 이동 가능한 경우
+        if (cursor != null && cursor.moveToFirst()) {
+            type = cursor.getString(0);  // 근무형태 가져오기
+        }
+
+        // 리소스 정리
+        if (cursor != null) {
+            cursor.close();  // 커서 닫기
+        }
+
         ContentValues values = new ContentValues();
         values.put("date", date);
+        values.put("type", type);
         values.put("note", note);
         values.put("holiday", Boolean.FALSE);
 
@@ -54,6 +73,71 @@ public class CalendarDB extends SQLiteOpenHelper {
         db.insertWithOnConflict("calendar", null, values, SQLiteDatabase.CONFLICT_REPLACE);
 
         db.close();
+    }
+
+    public void addType(String date, String type) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // 저장된 노트 불러오기
+        String note = null;  // 근무형태 초기화
+
+        // 쿼리 실행
+        Cursor cursor = db.query("calendar", new String[] { "note" }, "date = ?",
+                new String[] { date }, null, null, null);
+
+        // 커서가 null이 아니고, 첫 번째 요소로 이동 가능한 경우
+        if (cursor != null && cursor.moveToFirst()) {
+            note = cursor.getString(0);  // 근무형태 가져오기
+        }
+
+        // 리소스 정리
+        if (cursor != null) {
+            cursor.close();  // 커서 닫기
+        }
+
+        ContentValues values = new ContentValues();
+        values.put("date", date);
+        values.put("type", type);
+        values.put("note", note);
+        values.put("holiday", Boolean.FALSE);
+
+        // date가 중복되면 REPLACE (즉, update)
+        db.insertWithOnConflict("calendar", null, values, SQLiteDatabase.CONFLICT_REPLACE);
+
+        db.close();
+    }
+
+    public void delete(String date) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("calendar", "date = ?", new String[] { date });
+        db.close();
+    }
+
+    public String loadType(String date) {
+        // date가 null인 경우 처리
+        if (date == null) {
+            return null;  // 또는 적절한 에러 메시지 또는 기본값 반환
+        }
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String type = null;  // 근무형태 초기화
+
+        // 쿼리 실행
+        Cursor cursor = db.query("calendar", new String[] { "type" }, "date = ?",
+                new String[] { date }, null, null, null);
+
+        // 커서가 null이 아니고, 첫 번째 요소로 이동 가능한 경우
+        if (cursor != null && cursor.moveToFirst()) {
+            type = cursor.getString(0);  // 근무형태 가져오기
+        }
+
+        // 리소스 정리
+        if (cursor != null) {
+            cursor.close();  // 커서 닫기
+        }
+        db.close();  // 데이터베이스 닫기
+
+        return type;  // 메모 반환
     }
 
     public String loadNote(String date) {
@@ -83,12 +167,6 @@ public class CalendarDB extends SQLiteOpenHelper {
         return note;  // 메모 반환
     }
 
-    public void deleteNote(String date) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete("calendar", "date = ?", new String[] { date });
-        db.close();
-    }
-
     public void logAllNotes() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + "calendar", null);
@@ -104,4 +182,24 @@ public class CalendarDB extends SQLiteOpenHelper {
         }
         db.close(); // 데이터베이스 닫기
     }
+
+    /*
+    public boolean hasMemoForDate(int day, int month, int year) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        // 날짜를 "YYYY-MM-DD" 형식으로 생성
+        @SuppressLint("DefaultLocale") String date = String.format("%04d-%02d-%02d", year, month, day);
+
+        // 해당 날짜에 메모가 있는지 확인하는 쿼리
+        String query = "SELECT COUNT(*) FROM calendar WHERE date = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{date});
+        boolean hasMemo = false;
+
+        if (cursor.moveToFirst()) {
+            int count = cursor.getInt(0);
+            hasMemo = (count > 0);
+        }
+
+        cursor.close();
+        return hasMemo;
+    }*/
 }

@@ -16,13 +16,13 @@
             android:id="@+id/prevButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Prev" />
+            android:text="PREV" />
 
         <TextView
             android:id="@+id/current_month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="October 2024"
+            android:text="YYYY-MM"
             android:textSize="18sp"
             android:padding="8dp"
             android:layout_gravity="center"
@@ -32,7 +32,7 @@
             android:id="@+id/nextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Next" />
+            android:text="NEXT" />
     </LinearLayout>
 
     <!-- 요일 헤더 -->
