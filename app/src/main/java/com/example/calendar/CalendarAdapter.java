@@ -109,7 +109,12 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
 
         @Override
         public void onClick(View v) {
-            onItemListener.onItemClick(getAdapterPosition(), dayOfMonth.getText().toString());
+            String dayText = dayOfMonth.getText().toString();
+
+            // 빈 셀("")이 아닌 경우에만 클릭 이벤트 처리
+            if (!dayText.isEmpty()) {
+                onItemListener.onItemClick(getAdapterPosition(), dayText);
+            }
         }
     }
 
