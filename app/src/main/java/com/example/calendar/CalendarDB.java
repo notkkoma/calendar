@@ -182,24 +182,4 @@ public class CalendarDB extends SQLiteOpenHelper {
         }
         db.close(); // 데이터베이스 닫기
     }
-
-    /*
-    public boolean hasMemoForDate(int day, int month, int year) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        // 날짜를 "YYYY-MM-DD" 형식으로 생성
-        @SuppressLint("DefaultLocale") String date = String.format("%04d-%02d-%02d", year, month, day);
-
-        // 해당 날짜에 메모가 있는지 확인하는 쿼리
-        String query = "SELECT COUNT(*) FROM calendar WHERE date = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{date});
-        boolean hasMemo = false;
-
-        if (cursor.moveToFirst()) {
-            int count = cursor.getInt(0);
-            hasMemo = (count > 0);
-        }
-
-        cursor.close();
-        return hasMemo;
-    }*/
 }
