@@ -141,6 +141,12 @@ public class NoteActivity extends AppCompatActivity {
             selectedButton.setChecked(true);
             selectedButton.setBackgroundResource(R.drawable.toggle_on);
             db.addType(selectedDate, type);
+
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("selectedDate", selectedDate);
+            //Log.d("NoteActivity", "★ Selected date set L147: " + selectedDate);
+            setResult(RESULT_OK, resultIntent);
+            //finish(); // 저장 후 종료
         } else {
             selectedButton.setChecked(false);
             selectedButton.setBackgroundResource(R.drawable.toggle_off);
