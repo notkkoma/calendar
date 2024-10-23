@@ -1,0 +1,68 @@
+# Gradle 관련
+.gradle/
+build/
+*/build/
+!gradle-wrapper.jar
+.gradle/
+
+# 로컬 구성 파일 (IDE 설정)
+local.properties
+.idea/
+.DS_Store
+*.iml
+
+# 로그 및 임시 파일
+*.log
+*.lock
+*.tmp
+*.temp
+*.swp
+
+# OS 파일
+.DS_Store
+Thumbs.db
+
+# Gradle 캐시
+/caches/
+/logs/
+/wrapper/dists/
+
+# Android Studio 자동 생성 파일
+/.idea/workspace.xml
+/.idea/libraries/
+/.idea/caches/
+/.idea/modules.xml
+/.idea/assets/
+/.idea/gradle.xml
+/.idea/vcs.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+
+# IntelliJ IDEA 파일
+/out/
+
+# Android Lint
+lint/intermediates/
+
+# APK 파일
+*.apk
+*.ap_ 
+
+# ProGuard
+proguard/
+proguard-rules.pro
+
+# 영구적 환경 설정 파일
+*.properties
+
+# Google Services
+google-services.json
+
+# NDK 파일
+obj/
+
+# Android Jetpack 관련
+.cxx/
+
+# Kotlin 관련
+.idea/kotlin/
