@@ -56,6 +56,7 @@ public class NoteActivity extends AppCompatActivity {
         nightButton.setChecked(false);
         allButton.setChecked(false);
         offButton.setChecked(false);
+
         // 각 버튼의 배경색을 초기화
         dayButton.setBackgroundResource(R.drawable.toggle_off);
         nightButton.setBackgroundResource(R.drawable.toggle_off);
@@ -104,7 +105,13 @@ public class NoteActivity extends AppCompatActivity {
 
         // 삭제
         deleteButton.setOnClickListener(v -> {
+            // 1. 메모 내용이 있는 경우
             if (savedNote != null && !savedNote.isEmpty()) {
+                db.delete(selectedDate);
+                //db.logAllNotes();
+            }
+            // 2. 근무형태가 있는 경우
+            if (savedType != null && !savedType.isEmpty()){
                 db.delete(selectedDate);
                 //db.logAllNotes();
             }
