@@ -113,6 +113,8 @@ public class NoteActivity extends AppCompatActivity {
                 db.addType(selectedDate, selectedType);
             }
 
+            db.logAll();
+
             Intent resultIntent = new Intent();
             resultIntent.putExtra("selectedDate", selectedDate);
             setResult(RESULT_OK, resultIntent);
@@ -129,6 +131,9 @@ public class NoteActivity extends AppCompatActivity {
             if (savedType != null && !savedType.isEmpty()) {
                 db.delete(selectedDate);
             }
+
+            db.logAll();
+
             Intent resultIntent = new Intent();
             resultIntent.putExtra("selectedDate", selectedDate);
             setResult(RESULT_OK, resultIntent);

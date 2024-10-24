@@ -78,13 +78,11 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 
         prevButton.setOnClickListener(v -> {
             calendar.add(Calendar.MONTH, -1);
-            //Log.d("MainActivity", "★ Selected date set L71: " + calendar.getTime().toString());
             updateCalendar();
         });
 
         nextButton.setOnClickListener(v -> {
             calendar.add(Calendar.MONTH, 1);
-            //Log.d("MainActivity", "★ Selected date set L77: " + calendar.getTime().toString());
             updateCalendar();
         });
 
@@ -96,12 +94,10 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 
         // 현재 근무 패턴 3회 반복
         repeatButton.setOnClickListener(v -> {
-            db.repeatSchedule(); // 반복 함수 호출
+            db.repeat(); // 반복 함수 호출
             updateCalendar(); // UI 업데이트
         });
 
-
-        //Log.d("MainActivity", "★ Selected date set L81: " + calendar.getTime().toString());
         updateCalendar();
     }
 
