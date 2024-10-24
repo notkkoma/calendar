@@ -94,11 +94,27 @@ public class NoteActivity extends AppCompatActivity {
         // 업데이트 및 저장
         saveButton.setOnClickListener(v -> {
             String note = noteEditText.getText().toString();
+
+            // 선택된 근무 형태 확인
+            String selectedType = null;
+            if (dayButton.isChecked()) {
+                selectedType = "주간";
+            } else if (nightButton.isChecked()) {
+                selectedType = "야간";
+            } else if (allButton.isChecked()) {
+                selectedType = "전체";
+            } else if (offButton.isChecked()) {
+                selectedType = "비번";
+            }
+
+            // 메모와 근무 형태 저장
             db.addNote(selectedDate, note);
-            //db.logAllNotes();
+            if (selectedType != null) {
+                db.addType(selectedDate, selectedType);
+            }
+
             Intent resultIntent = new Intent();
             resultIntent.putExtra("selectedDate", selectedDate);
-            //Log.d("NoteActivity", "★ Selected date set L47: " + selectedDate);
             setResult(RESULT_OK, resultIntent);
             finish(); // 저장 후 종료
         });
@@ -108,16 +124,13 @@ public class NoteActivity extends AppCompatActivity {
             // 1. 메모 내용이 있는 경우
             if (savedNote != null && !savedNote.isEmpty()) {
                 db.delete(selectedDate);
-                //db.logAllNotes();
             }
             // 2. 근무형태가 있는 경우
-            if (savedType != null && !savedType.isEmpty()){
+            if (savedType != null && !savedType.isEmpty()) {
                 db.delete(selectedDate);
-                //db.logAllNotes();
             }
             Intent resultIntent = new Intent();
             resultIntent.putExtra("selectedDate", selectedDate);
-            //Log.d("NoteActivity", "★ Selected date set L60: " + selectedDate);
             setResult(RESULT_OK, resultIntent);
             finish(); // 삭제 후 종료
         });
@@ -140,17 +153,9 @@ public class NoteActivity extends AppCompatActivity {
         if (selectedButton.isChecked()) {
             selectedButton.setChecked(true);
             selectedButton.setBackgroundResource(R.drawable.toggle_on);
-            db.addType(selectedDate, type);
-
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("selectedDate", selectedDate);
-            //Log.d("NoteActivity", "★ Selected date set L147: " + selectedDate);
-            setResult(RESULT_OK, resultIntent);
-            //finish(); // 저장 후 종료
         } else {
             selectedButton.setChecked(false);
             selectedButton.setBackgroundResource(R.drawable.toggle_off);
-            db.addType(selectedDate, null);
         }
     }
 }

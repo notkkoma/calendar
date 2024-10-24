@@ -8,6 +8,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 public class CalendarDB extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "calendar.db";
@@ -79,7 +85,7 @@ public class CalendarDB extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         // 저장된 노트 불러오기
-        String note = null;  // 근무형태 초기화
+        String note = null;  // 메모 초기화
 
         // 쿼리 실행
         Cursor cursor = db.query("calendar", new String[] { "note" }, "date = ?",
@@ -87,7 +93,7 @@ public class CalendarDB extends SQLiteOpenHelper {
 
         // 커서가 null이 아니고, 첫 번째 요소로 이동 가능한 경우
         if (cursor != null && cursor.moveToFirst()) {
-            note = cursor.getString(0);  // 근무형태 가져오기
+            note = cursor.getString(0);  // 메모 가져오기
         }
 
         // 리소스 정리
@@ -110,6 +116,12 @@ public class CalendarDB extends SQLiteOpenHelper {
     public void delete(String date) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete("calendar", "date = ?", new String[] { date });
+        db.close();
+    }
+
+    public void deleteAll() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("calendar", null, null); // 모든 행을 삭제
         db.close();
     }
 
@@ -167,6 +179,93 @@ public class CalendarDB extends SQLiteOpenHelper {
         return note;  // 메모 반환
     }
 
+//    // 근무형태 패턴을 10번 반복해주는 함수
+//    public void repeatSchedule(String workType) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//
+//        // SimpleDateFormat to parse and format dates
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+//
+//        try {
+//            String startDate = null;
+//            String lastDate = null;
+//
+//            // Query to select the first row by the date column
+//            Cursor cursorStart = db.query("calendar", new String[] { "date" }, null, null, null, null, "date ASC", "1");
+//
+//            // Check if the cursor has any data and move to the first row
+//            if (cursorStart != null && cursorStart.moveToFirst()) {
+//                @SuppressLint("Range") String date = cursorStart.getString(cursorStart.getColumnIndex("date"));
+//                startDate = date;  // Store the first date
+//            }
+//
+//            // Close the cursor and database
+//            if (cursorStart != null) {
+//                cursorStart.close();
+//            }
+//
+//            // Query to select the last row by the date column
+//            Cursor cursorLast = db.query("calendar", new String[] { "date" }, null, null, null, null, "date DESC", "1");
+//
+//            // Check if the cursor has any data and move to the first row
+//            if (cursorLast != null && cursorLast.moveToFirst()) {
+//                @SuppressLint("Range") String date = cursorLast.getString(cursorLast.getColumnIndex("date"));
+//                lastDate = date;  // Store the last date
+//            }
+//
+//            // Close the cursor and database
+//            if (cursorLast != null) {
+//                cursorLast.close();
+//            }
+//
+//            // Parse the repeating date
+//            assert lastDate != null;
+//            Date parsedDate = sdf.parse(lastDate);
+//            Date date = null;
+//            String dateString = null;
+//            Calendar calendar = null;
+//
+//            // Check for parsing success
+//            if (parsedDate != null) {
+//                // Create a Calendar instance and set the parsed date
+//                calendar = Calendar.getInstance();
+//                calendar.setTime(parsedDate);
+//
+//                // Increment the date by one day
+//                calendar.add(Calendar.DAY_OF_MONTH, 1);
+//
+//                // Get the new date
+//                date = calendar.getTime();
+//
+//                // Convert the incremented date back to a string
+//                dateString = sdf.format(date);
+//            }
+//
+//            // Loop through the specified number of days
+//            for (int i = 0; i < 10; i++) {
+//                assert calendar != null;
+//                String currentDate = sdf.format(calendar.getTime()); // Get the current date as a string
+//
+//                // Create ContentValues to insert/update in the database
+//                ContentValues values = new ContentValues();
+//                values.put("date", currentDate);
+//                values.put("type", workType);
+//                values.put("note", "");  // Optional: can insert a default note or leave blank
+//                values.put("holiday", Boolean.FALSE);
+//
+//                // Insert or replace the work schedule for the current date
+//                db.insertWithOnConflict("calendar", null, values, SQLiteDatabase.CONFLICT_REPLACE);
+//
+//                // Move the calendar forward by one day
+//                calendar.add(Calendar.DAY_OF_MONTH, 1);
+//            }
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        } finally {
+//            db.close();
+//        }
+//    }
+
     public void logAllNotes() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + "calendar", null);
@@ -174,9 +273,10 @@ public class CalendarDB extends SQLiteOpenHelper {
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex("date"));
+                @SuppressLint("Range") String type = cursor.getString(cursor.getColumnIndex("type"));
                 @SuppressLint("Range") String note = cursor.getString(cursor.getColumnIndex("note"));
                 @SuppressLint("Range") String holiday = cursor.getString(cursor.getColumnIndex("holiday"));
-                Log.d("CalendarDB", "★ " + ", Date: " + date + ", Note: " + note + ", Holiday: " + holiday);
+                Log.d("CalendarDB", "★ " + ", Date: " + date + ", Type: " + type + ", Note: " + note + ", Holiday: " + holiday);
             }
             cursor.close(); // 커서 닫기
         }

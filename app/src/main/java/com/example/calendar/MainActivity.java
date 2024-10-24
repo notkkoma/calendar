@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
     Button prevButton;
     Button nextButton;
     TextView monthText;
+    Button deleteAllButton;
+    private CalendarDB db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +42,13 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         prevButton = findViewById(R.id.prevButton);
         monthText = findViewById(R.id.current_month);
         nextButton = findViewById(R.id.nextButton);
+        deleteAllButton = findViewById(R.id.buttonDeleteAll);
+
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
 
         calendar = Calendar.getInstance();
+
+        db = new CalendarDB(this);
 
         noteActivityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -50,13 +56,13 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         // NoteActivity에서 선택한 날짜 가져오기
                         String selectedDate = result.getData().getStringExtra("selectedDate");
-                        Log.d("MainActivity", "★ Selected date set L53: " + selectedDate);
+                        //Log.d("MainActivity", "★ Selected date set L53: " + selectedDate);
                         if (selectedDate != null) {
                             // selectedDate를 Calendar 객체로 파싱
                             try {
                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                                 Date date = sdf.parse(selectedDate);
-                                Log.d("MainActivity", "★ Selected date set L59: " + selectedDate);
+                                //Log.d("MainActivity", "★ Selected date set L59: " + selectedDate);
                                 if (date != null) {
                                     calendar.setTime(date);  // Calendar에 설정
                                 }
@@ -80,6 +86,12 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
             updateCalendar();
         });
 
+        // 전체 DB 내용 삭제
+        deleteAllButton.setOnClickListener(v -> {
+            db.deleteAll(); // DB에서 모든 내용 삭제
+            updateCalendar(); // UI 업데이트
+        });
+
         //Log.d("MainActivity", "★ Selected date set L81: " + calendar.getTime().toString());
         updateCalendar();
     }
@@ -95,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         // 날짜 클릭 시 NoteActivity로 이동
         String selectedDate = getSelectedDateString(day);  // 선택된 날짜를 생성
         Intent intent = new Intent(MainActivity.this, NoteActivity.class);
-        Log.d("MainActivity", "★ Selected date set L97: " + selectedDate);
+        //Log.d("MainActivity", "★ Selected date set L97: " + selectedDate);
         intent.putExtra("selectedDate", selectedDate);  // 선택된 날짜 전달
 
         // NoteActivity 시작
