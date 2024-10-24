@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
     Button nextButton;
     TextView monthText;
     Button deleteAllButton;
+    Button repeatButton;
     private CalendarDB db;
 
     @Override
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
         monthText = findViewById(R.id.current_month);
         nextButton = findViewById(R.id.nextButton);
         deleteAllButton = findViewById(R.id.buttonDeleteAll);
+        repeatButton = findViewById(R.id.buttonRepeat);
 
         calendarRecyclerView = findViewById(R.id.calendarRecyclerView);
 
@@ -91,6 +93,13 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
             db.deleteAll(); // DB에서 모든 내용 삭제
             updateCalendar(); // UI 업데이트
         });
+
+        // 현재 근무 패턴 3회 반복
+        repeatButton.setOnClickListener(v -> {
+            db.repeatSchedule(); // 반복 함수 호출
+            updateCalendar(); // UI 업데이트
+        });
+
 
         //Log.d("MainActivity", "★ Selected date set L81: " + calendar.getTime().toString());
         updateCalendar();

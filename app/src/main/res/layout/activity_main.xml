@@ -103,10 +103,25 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp" />
 
-    <Button
-        android:id="@+id/buttonDeleteAll"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="전체삭제" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonDeleteAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="전체삭제"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/buttonRepeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="반복" />
+
+    </LinearLayout>
+
 
 </LinearLayout>

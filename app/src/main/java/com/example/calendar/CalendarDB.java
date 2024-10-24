@@ -10,8 +10,10 @@ import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class CalendarDB extends SQLiteOpenHelper {
@@ -21,13 +23,13 @@ public class CalendarDB extends SQLiteOpenHelper {
     private static CalendarDB instance;
 
     public static synchronized CalendarDB getInstance(Context context) {
-        if(instance == null){
+        if (instance == null) {
             instance = new CalendarDB(context.getApplicationContext());
         }
         return instance;
     }
 
-    public CalendarDB(Context context){
+    public CalendarDB(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -56,8 +58,8 @@ public class CalendarDB extends SQLiteOpenHelper {
         String type = null;  // 근무형태 초기화
 
         // 쿼리 실행
-        Cursor cursor = db.query("calendar", new String[] { "type" }, "date = ?",
-                new String[] { date }, null, null, null);
+        Cursor cursor = db.query("calendar", new String[]{"type"}, "date = ?",
+                new String[]{date}, null, null, null);
 
         // 커서가 null이 아니고, 첫 번째 요소로 이동 가능한 경우
         if (cursor != null && cursor.moveToFirst()) {
@@ -88,8 +90,8 @@ public class CalendarDB extends SQLiteOpenHelper {
         String note = null;  // 메모 초기화
 
         // 쿼리 실행
-        Cursor cursor = db.query("calendar", new String[] { "note" }, "date = ?",
-                new String[] { date }, null, null, null);
+        Cursor cursor = db.query("calendar", new String[]{"note"}, "date = ?",
+                new String[]{date}, null, null, null);
 
         // 커서가 null이 아니고, 첫 번째 요소로 이동 가능한 경우
         if (cursor != null && cursor.moveToFirst()) {
@@ -115,7 +117,7 @@ public class CalendarDB extends SQLiteOpenHelper {
 
     public void delete(String date) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete("calendar", "date = ?", new String[] { date });
+        db.delete("calendar", "date = ?", new String[]{date});
         db.close();
     }
 
@@ -135,8 +137,8 @@ public class CalendarDB extends SQLiteOpenHelper {
         String type = null;  // 근무형태 초기화
 
         // 쿼리 실행
-        Cursor cursor = db.query("calendar", new String[] { "type" }, "date = ?",
-                new String[] { date }, null, null, null);
+        Cursor cursor = db.query("calendar", new String[]{"type"}, "date = ?",
+                new String[]{date}, null, null, null);
 
         // 커서가 null이 아니고, 첫 번째 요소로 이동 가능한 경우
         if (cursor != null && cursor.moveToFirst()) {
@@ -162,8 +164,8 @@ public class CalendarDB extends SQLiteOpenHelper {
         String note = null;  // 메모 초기화
 
         // 쿼리 실행
-        Cursor cursor = db.query("calendar", new String[] { "note" }, "date = ?",
-                new String[] { date }, null, null, null);
+        Cursor cursor = db.query("calendar", new String[]{"note"}, "date = ?",
+                new String[]{date}, null, null, null);
 
         // 커서가 null이 아니고, 첫 번째 요소로 이동 가능한 경우
         if (cursor != null && cursor.moveToFirst()) {
@@ -179,92 +181,89 @@ public class CalendarDB extends SQLiteOpenHelper {
         return note;  // 메모 반환
     }
 
-//    // 근무형태 패턴을 10번 반복해주는 함수
-//    public void repeatSchedule(String workType) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//
-//        // SimpleDateFormat to parse and format dates
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-//
-//        try {
-//            String startDate = null;
-//            String lastDate = null;
-//
-//            // Query to select the first row by the date column
-//            Cursor cursorStart = db.query("calendar", new String[] { "date" }, null, null, null, null, "date ASC", "1");
-//
-//            // Check if the cursor has any data and move to the first row
-//            if (cursorStart != null && cursorStart.moveToFirst()) {
-//                @SuppressLint("Range") String date = cursorStart.getString(cursorStart.getColumnIndex("date"));
-//                startDate = date;  // Store the first date
-//            }
-//
-//            // Close the cursor and database
-//            if (cursorStart != null) {
-//                cursorStart.close();
-//            }
-//
-//            // Query to select the last row by the date column
-//            Cursor cursorLast = db.query("calendar", new String[] { "date" }, null, null, null, null, "date DESC", "1");
-//
-//            // Check if the cursor has any data and move to the first row
-//            if (cursorLast != null && cursorLast.moveToFirst()) {
-//                @SuppressLint("Range") String date = cursorLast.getString(cursorLast.getColumnIndex("date"));
-//                lastDate = date;  // Store the last date
-//            }
-//
-//            // Close the cursor and database
-//            if (cursorLast != null) {
-//                cursorLast.close();
-//            }
-//
-//            // Parse the repeating date
-//            assert lastDate != null;
-//            Date parsedDate = sdf.parse(lastDate);
-//            Date date = null;
-//            String dateString = null;
-//            Calendar calendar = null;
-//
-//            // Check for parsing success
-//            if (parsedDate != null) {
-//                // Create a Calendar instance and set the parsed date
-//                calendar = Calendar.getInstance();
-//                calendar.setTime(parsedDate);
-//
-//                // Increment the date by one day
-//                calendar.add(Calendar.DAY_OF_MONTH, 1);
-//
-//                // Get the new date
-//                date = calendar.getTime();
-//
-//                // Convert the incremented date back to a string
-//                dateString = sdf.format(date);
-//            }
-//
-//            // Loop through the specified number of days
-//            for (int i = 0; i < 10; i++) {
-//                assert calendar != null;
-//                String currentDate = sdf.format(calendar.getTime()); // Get the current date as a string
-//
-//                // Create ContentValues to insert/update in the database
-//                ContentValues values = new ContentValues();
-//                values.put("date", currentDate);
-//                values.put("type", workType);
-//                values.put("note", "");  // Optional: can insert a default note or leave blank
-//                values.put("holiday", Boolean.FALSE);
-//
-//                // Insert or replace the work schedule for the current date
-//                db.insertWithOnConflict("calendar", null, values, SQLiteDatabase.CONFLICT_REPLACE);
-//
-//                // Move the calendar forward by one day
-//                calendar.add(Calendar.DAY_OF_MONTH, 1);
-//            }
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        } finally {
-//            db.close();
-//        }
-//    }
+    @SuppressLint("Range")
+    public void repeatSchedule() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+        try {
+            // 1. 저장된 근무형태의 첫째 날과 마지막 날을 가져오기
+            String startDate = null;
+            String endDate = null;
+
+            // 첫 번째 날짜 가져오기 (오름차순 정렬 후 첫 번째)
+            Cursor cursorStart = db.query("calendar", new String[]{"date"}, "type IS NOT NULL", null, null, null, "date ASC", "1");
+            if (cursorStart != null && cursorStart.moveToFirst()) {
+                startDate = cursorStart.getString(cursorStart.getColumnIndex("date"));
+            }
+            cursorStart.close();
+
+            // 마지막 날짜 가져오기 (내림차순 정렬 후 첫 번째)
+            Cursor cursorEnd = db.query("calendar", new String[]{"date"}, "type IS NOT NULL", null, null, null, "date DESC", "1");
+            if (cursorEnd != null && cursorEnd.moveToFirst()) {
+                endDate = cursorEnd.getString(cursorEnd.getColumnIndex("date"));
+            }
+            cursorEnd.close();
+
+            // 저장된 패턴을 가져오기 위해 두 날짜가 유효한지 확인
+            if (startDate == null || endDate == null) {
+                Log.d("CalendarDB", "★ L208: No schedule to repeat.");
+                return; // 패턴이 없으면 함수 종료
+            }
+
+            // 2. 첫째 날부터 마지막 날까지의 패턴을 반복
+            Date start = sdf.parse(startDate);
+            Date end = sdf.parse(endDate);
+
+            // 날짜 범위 내의 패턴을 가져옴
+            Cursor patternCursor = db.query("calendar", new String[]{"date", "type"}, "date BETWEEN ? AND ? AND type IS NOT NULL",
+                    new String[]{startDate, endDate}, null, null, "date ASC");
+
+            // 패턴을 리스트로 저장
+            List<String> patternDates = new ArrayList<>();
+            List<String> patternTypes = new ArrayList<>();
+
+            if (patternCursor != null) {
+                while (patternCursor.moveToNext()) {
+                    String date = patternCursor.getString(patternCursor.getColumnIndex("date"));
+                    String type = patternCursor.getString(patternCursor.getColumnIndex("type"));
+                    patternDates.add(date);
+                    patternTypes.add(type);
+                }
+                patternCursor.close();
+            }
+
+            // 3. 마지막 날짜 다음날부터 패턴을 3회 반복하여 저장
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(end);  // 마지막 날로 설정
+            calendar.add(Calendar.DAY_OF_MONTH, 1); // 마지막 날의 다음 날로 이동
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < patternDates.size(); j++) {
+                    String newDate = sdf.format(calendar.getTime()); // 새로운 날짜
+                    String type = patternTypes.get(j);  // 해당 날짜의 근무형태
+
+                    // 새로운 날짜와 패턴을 DB에 저장
+                    ContentValues values = new ContentValues();
+                    values.put("date", newDate);
+                    values.put("type", type);
+                    values.put("note", "");  // 메모는 공백으로 저장
+                    values.put("holiday", Boolean.FALSE);
+
+                    db.insertWithOnConflict("calendar", null, values, SQLiteDatabase.CONFLICT_REPLACE);
+
+                    calendar.add(Calendar.DAY_OF_MONTH, 1); // 하루씩 증가
+                }
+            }
+
+            Log.d("CalendarDB", "★ L208: Schedule repeated 3 times.");
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            db.close(); // 데이터베이스 닫기
+        }
+    }
 
     public void logAllNotes() {
         SQLiteDatabase db = this.getReadableDatabase();
