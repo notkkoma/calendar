@@ -58,82 +58,73 @@ public class CalendarDB extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addNote(String date, String note) {
+    public void add(String date, String note, String type, boolean isHoliday) {
         SQLiteDatabase db = this.getWritableDatabase();
-
-        // 날짜 포맷에서 연도와 월을 추출
-        String solYear = date.substring(0, 4);
-        String solMonth = date.substring(5, 7);
-
-        // 저장된 근무형태 불러오기
-        String type = null;  // 근무형태 초기화
-
-        // 쿼리 실행
-        Cursor cursor = db.query("calendar", new String[]{"type"}, "date = ?",
-                new String[]{date}, null, null, null);
-
-        // 커서가 null이 아니고, 첫 번째 요소로 이동 가능한 경우
-        if (cursor != null && cursor.moveToFirst()) {
-            type = cursor.getString(0);  // 근무형태 가져오기
-        }
-
-        // 리소스 정리
-        if (cursor != null) {
-            cursor.close();  // 커서 닫기
-        }
 
         ContentValues values = new ContentValues();
         values.put("date", date);
         values.put("type", type);
         values.put("note", note);
-        values.put("holiday", Boolean.FALSE);
+        values.put("holiday", isHoliday);  // 공휴일 상태 저장
 
-        // date가 중복되면 REPLACE (즉, update)
         db.insertWithOnConflict("calendar", null, values, SQLiteDatabase.CONFLICT_REPLACE);
-
-        // 공휴일 업데이트 함수 호출
-        updateHolidayStatus(solYear, solMonth);
 
         db.close();
     }
 
-    public void addType(String date, String type) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        // 날짜 포맷에서 연도와 월을 추출
+    public void isHoliday(String date, HolidayCallback callback) {
         String solYear = date.substring(0, 4);
         String solMonth = date.substring(5, 7);
 
-        // 저장된 노트 불러오기
-        String note = null;  // 메모 초기화
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/")
+                .addConverterFactory(SimpleXmlConverterFactory.create()) // XML 파서 필요
+                .build();
 
-        // 쿼리 실행
-        Cursor cursor = db.query("calendar", new String[]{"note"}, "date = ?",
-                new String[]{date}, null, null, null);
+        HolidayAPI holidayApi = retrofit.create(HolidayAPI.class);
 
-        // 커서가 null이 아니고, 첫 번째 요소로 이동 가능한 경우
-        if (cursor != null && cursor.moveToFirst()) {
-            note = cursor.getString(0);  // 메모 가져오기
-        }
+        Call<HolidayResponse> call = holidayApi.getHolidays(
+                "service_key",
+                solYear, solMonth);
 
-        // 리소스 정리
-        if (cursor != null) {
-            cursor.close();  // 커서 닫기
-        }
+        call.enqueue(new Callback<HolidayResponse>() {
+            @Override
+            public void onResponse(Call<HolidayResponse> call, Response<HolidayResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    HolidayResponse holidayResponse = response.body();
+                    List<HolidayResponse.Item> holidays = holidayResponse.getBody().getItems().getItem();
 
-        ContentValues values = new ContentValues();
-        values.put("date", date);
-        values.put("type", type);
-        values.put("note", note);
-        values.put("holiday", Boolean.FALSE);
+                    boolean isHoliday = false;
+                    for (HolidayResponse.Item holiday : holidays) {
+                        if ("Y".equals(holiday.getIsHoliday())) {
+                            String locdate = holiday.getLocdate();
+                            String formattedDate = locdate.substring(0, 4) + "-" + locdate.substring(4, 6) + "-" + locdate.substring(6);
+                            if (formattedDate.equals(date)) {
+                                isHoliday = true;
+                                break;
+                            }
+                        }
+                    }
 
-        // date가 중복되면 REPLACE (즉, update)
-        db.insertWithOnConflict("calendar", null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                    // 콜백으로 공휴일 정보를 전달
+                    callback.onHolidayChecked(isHoliday);
+                } else {
+                    Log.e("API_ERROR", "Response unsuccessful: " + response.message());
+                    callback.onFailure();
+                }
+            }
 
-        // 공휴일 업데이트 함수 호출
-        updateHolidayStatus(solYear, solMonth);
+            @Override
+            public void onFailure(Call<HolidayResponse> call, Throwable t) {
+                Log.e("API_ERROR", "★ CalendarDB.java API 호출 실패: " + t.getMessage());
+                callback.onFailure();
+            }
+        });
+    }
 
-        db.close();
+    public interface HolidayCallback {
+        void onHolidayChecked(boolean isHoliday);
+        void onFailure();
     }
 
     public void delete(String date) {
@@ -286,57 +277,6 @@ public class CalendarDB extends SQLiteOpenHelper {
         }
     }
 
-    public void updateHolidayStatus(String solYear, String solMonth) {
-        // Retrofit 인스턴스 생성
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/")
-                .addConverterFactory(SimpleXmlConverterFactory.create()) // API가 XML을 반환하므로 XML 파서 필요
-                .build();
-
-        // HolidayApi 인터페이스 구현
-        HolidayAPI holidayApi = retrofit.create(HolidayAPI.class);
-
-        // ★ 이부분 github에 넘어가지 않게 유의!
-        // API 호출 (serviceKey, 연도, 월 전달)
-        Call<HolidayResponse> call = holidayApi.getHolidays(
-                "your_service_key",
-                solYear, solMonth);
-
-        // 비동기 API 호출
-        call.enqueue(new Callback<HolidayResponse>() {
-            @Override
-            public void onResponse(Call<HolidayResponse> call, Response<HolidayResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    // API 응답 처리
-                    HolidayResponse holidayResponse = response.body();
-                    List<HolidayResponse.Item> holidays = holidayResponse.getBody().getItems().getItem(); // Body에서 items를 가져옵니다.
-
-                    SQLiteDatabase db = getWritableDatabase();
-                    for (HolidayResponse.Item holiday : holidays) {
-                        if ("Y".equals(holiday.getIsHoliday())) {
-                            String locdate = holiday.getLocdate(); // 공휴일 날짜
-                            String formattedDate = locdate.substring(0, 4) + "-" + locdate.substring(4, 6) + "-" + locdate.substring(6);
-
-                            // 해당 날짜의 holiday 필드를 true로 업데이트
-                            ContentValues values = new ContentValues();
-                            values.put("holiday", true);
-                            db.update("calendar", values, "date = ?", new String[]{formattedDate});
-                        }
-                    }
-                    db.close();
-                } else {
-                    Log.e("API_ERROR", "Response unsuccessful: " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<HolidayResponse> call, Throwable t) {
-                // 실패 처리
-                Log.e("API_ERROR", "★ CalendarDB.java L330 API 호출 실패: " + t.getMessage());
-            }
-        });
-    }
-
     public void logAll() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + "calendar", null);
@@ -347,7 +287,7 @@ public class CalendarDB extends SQLiteOpenHelper {
                 @SuppressLint("Range") String type = cursor.getString(cursor.getColumnIndex("type"));
                 @SuppressLint("Range") String note = cursor.getString(cursor.getColumnIndex("note"));
                 @SuppressLint("Range") String holiday = cursor.getString(cursor.getColumnIndex("holiday"));
-                Log.d("CalendarDB", "★ " + ", Date: " + date + ", Type: " + type + ", Note: " + note + ", Holiday: " + holiday);
+                Log.d("CalendarDB", "★ " + "Date: " + date + ", Type: " + type + ", Note: " + note + ", Holiday: " + holiday);
             }
             cursor.close(); // 커서 닫기
         }

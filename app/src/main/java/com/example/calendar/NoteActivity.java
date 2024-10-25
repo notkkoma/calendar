@@ -91,34 +91,43 @@ public class NoteActivity extends AppCompatActivity {
         allButton.setOnClickListener(v -> setSelectedButton(allButton, "전체"));
         offButton.setOnClickListener(v -> setSelectedButton(offButton, "비번"));
 
-        // 업데이트 및 저장
+        // 저장 버튼 클릭 시
         saveButton.setOnClickListener(v -> {
             String note = noteEditText.getText().toString();
+            String type = null;
 
-            // 선택된 근무 형태 확인
-            String selectedType = null;
             if (dayButton.isChecked()) {
-                selectedType = "주간";
+                type = "주간";
             } else if (nightButton.isChecked()) {
-                selectedType = "야간";
+                type = "야간";
             } else if (allButton.isChecked()) {
-                selectedType = "전체";
+                type = "전체";
             } else if (offButton.isChecked()) {
-                selectedType = "비번";
+                type = "비번";
             }
 
-            // 메모와 근무 형태 저장
-            db.addNote(selectedDate, note);
-            if (selectedType != null) {
-                db.addType(selectedDate, selectedType);
-            }
+            // 공휴일 여부 확인 후 메모 및 근무형태 저장
+            String finalType = type;
+            db.isHoliday(selectedDate, new CalendarDB.HolidayCallback() {
+                @Override
+                public void onHolidayChecked(boolean isHoliday) {
+                    // 공휴일 정보 확인 후 메모 및 근무형태 저장
+                    db.add(selectedDate, note, finalType, isHoliday);
 
-            db.logAll();
+                    // 결과 전달 및 액티비티 종료
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("selectedDate", selectedDate);
+                    setResult(RESULT_OK, resultIntent);
 
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("selectedDate", selectedDate);
-            setResult(RESULT_OK, resultIntent);
-            finish(); // 저장 후 종료
+                    db.logAll();  // 로그 출력
+                    finish();     // 저장 후 종료
+                }
+
+                @Override
+                public void onFailure() {
+                    Log.e("SAVE_ERROR", "공휴일 업데이트 실패");
+                }
+            });
         });
 
         // 삭제
