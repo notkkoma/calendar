@@ -64,18 +64,23 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
             // 날짜에 근무형태, 메모가 있는지 확인
             String type = db.loadType(selectedDate);
             String note = db.loadNote(selectedDate);
+            Boolean holiday = db.loadHoliday(selectedDate);
             // 1. 근무형태
             if (type != null && !type.isEmpty()) {
                 // 근무형태가 있으면 특수 색상으로 설정: 주간, 야간, 전체
                 switch (type) {
-                    case "주간":
+                    case "주":
+                        // 공휴일에 주간이면 비번
+                        if(holiday) {break;}
                         holder.cardView.setCardBackgroundColor(ContextCompat.getColor(holder.cardView.getContext(), R.color.pink));
                         break;
-                    case "야간":
+                    case "야":
+                        // 공휴일에 야간이면 전체
+                        if(holiday){
+                            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(holder.cardView.getContext(), R.color.red));
+                            break;
+                        }
                         holder.cardView.setCardBackgroundColor(ContextCompat.getColor(holder.cardView.getContext(), R.color.grey));
-                        break;
-                    case "전체":
-                        holder.cardView.setCardBackgroundColor(ContextCompat.getColor(holder.cardView.getContext(), R.color.red));
                         break;
                 }
             }

@@ -19,7 +19,7 @@ public class NoteActivity extends AppCompatActivity {
     private EditText noteEditText;
     private ToggleButton dayButton;
     private ToggleButton nightButton;
-    private ToggleButton allButton;
+    private ToggleButton morningButton;
     private ToggleButton offButton;
     private Button saveButton;
     private Button deleteButton;
@@ -36,7 +36,7 @@ public class NoteActivity extends AppCompatActivity {
         noteEditText = findViewById(R.id.editTextNote);
         dayButton = findViewById(R.id.buttonDay);
         nightButton = findViewById(R.id.buttonNight);
-        allButton = findViewById(R.id.buttonAll);
+        morningButton = findViewById(R.id.buttonMorning);
         offButton = findViewById(R.id.buttonOff);
         saveButton = findViewById(R.id.buttonSave);
         deleteButton = findViewById(R.id.buttonDelete);
@@ -54,30 +54,30 @@ public class NoteActivity extends AppCompatActivity {
         // 불러오기
         dayButton.setChecked(false);
         nightButton.setChecked(false);
-        allButton.setChecked(false);
+        morningButton.setChecked(false);
         offButton.setChecked(false);
 
         // 각 버튼의 배경색을 초기화
         dayButton.setBackgroundResource(R.drawable.toggle_off);
         nightButton.setBackgroundResource(R.drawable.toggle_off);
-        allButton.setBackgroundResource(R.drawable.toggle_off);
+        morningButton.setBackgroundResource(R.drawable.toggle_off);
         offButton.setBackgroundResource(R.drawable.toggle_off);
         String savedType = db.loadType(selectedDate);
         if (savedType != null) {
             switch (savedType) {
-                case "주간":
+                case "주":
                     dayButton.setChecked(true);
                     dayButton.setBackgroundResource(R.drawable.toggle_on);
                     break;
-                case "야간":
+                case "야":
                     nightButton.setChecked(true);
                     nightButton.setBackgroundResource(R.drawable.toggle_on);
                     break;
-                case "전체":
-                    allButton.setChecked(true);
-                    allButton.setBackgroundResource(R.drawable.toggle_on);
+                case "조":
+                    morningButton.setChecked(true);
+                    morningButton.setBackgroundResource(R.drawable.toggle_on);
                     break;
-                case "비번":
+                case "비":
                     offButton.setChecked(true);
                     offButton.setBackgroundResource(R.drawable.toggle_on);
                     break;
@@ -86,10 +86,10 @@ public class NoteActivity extends AppCompatActivity {
             }
         }
 
-        dayButton.setOnClickListener(v -> setSelectedButton(dayButton, "주간"));
-        nightButton.setOnClickListener(v -> setSelectedButton(nightButton, "야간"));
-        allButton.setOnClickListener(v -> setSelectedButton(allButton, "전체"));
-        offButton.setOnClickListener(v -> setSelectedButton(offButton, "비번"));
+        dayButton.setOnClickListener(v -> setSelectedButton(dayButton, "주"));
+        nightButton.setOnClickListener(v -> setSelectedButton(nightButton, "야"));
+        morningButton.setOnClickListener(v -> setSelectedButton(morningButton, "조"));
+        offButton.setOnClickListener(v -> setSelectedButton(offButton, "비"));
 
         // 저장 버튼 클릭 시
         saveButton.setOnClickListener(v -> {
@@ -97,13 +97,13 @@ public class NoteActivity extends AppCompatActivity {
             String type = null;
 
             if (dayButton.isChecked()) {
-                type = "주간";
+                type = "주";
             } else if (nightButton.isChecked()) {
-                type = "야간";
-            } else if (allButton.isChecked()) {
-                type = "전체";
+                type = "야";
+            } else if (morningButton.isChecked()) {
+                type = "조";
             } else if (offButton.isChecked()) {
-                type = "비번";
+                type = "비";
             }
 
             // 공휴일 여부 확인 후 메모 및 근무형태 저장
@@ -154,13 +154,13 @@ public class NoteActivity extends AppCompatActivity {
     private void setSelectedButton(ToggleButton selectedButton, String type) {
         dayButton.setChecked(selectedButton == dayButton);
         nightButton.setChecked(selectedButton == nightButton);
-        allButton.setChecked(selectedButton == allButton);
+        morningButton.setChecked(selectedButton == morningButton);
         offButton.setChecked(selectedButton == offButton);
 
         // 각 버튼의 배경색을 초기화
         dayButton.setBackgroundResource(R.drawable.toggle_off);
         nightButton.setBackgroundResource(R.drawable.toggle_off);
-        allButton.setBackgroundResource(R.drawable.toggle_off);
+        morningButton.setBackgroundResource(R.drawable.toggle_off);
         offButton.setBackgroundResource(R.drawable.toggle_off);
 
         // 선택된 버튼의 배경색을 변경

@@ -29,31 +29,31 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:textOn="주간"
-                android:textOff="주간" />
+                android:textOn="주"
+                android:textOff="주" />
 
             <ToggleButton
                 android:id="@+id/buttonNight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:textOn="야간"
-                android:textOff="야간" />
+                android:textOn="야"
+                android:textOff="야" />
 
             <ToggleButton
-                android:id="@+id/buttonAll"
+                android:id="@+id/buttonMorning"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:textOn="전체"
-                android:textOff="전체" />
+                android:textOn="조"
+                android:textOff="조" />
 
             <ToggleButton
                 android:id="@+id/buttonOff"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textOn="비번"
-                android:textOff="비번" />
+                android:textOn="비"
+                android:textOff="비" />
 
         </LinearLayout>
 
