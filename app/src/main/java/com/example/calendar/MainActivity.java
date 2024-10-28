@@ -94,8 +94,14 @@ public class MainActivity extends AppCompatActivity implements CalendarAdapter.O
 
         // 현재 근무 패턴 3회 반복
         repeatButton.setOnClickListener(v -> {
-            db.repeat(); // 반복 함수 호출
-            updateCalendar(); // UI 업데이트
+            db.repeat(new CalendarDB.RepeatCallback() {
+                @Override
+                public void onRepeatCompleted() {
+                    runOnUiThread(() -> {
+                        updateCalendar(); // UI 업데이트
+                    });
+                }
+            }); // 반복 함수 호출
         });
 
         updateCalendar();

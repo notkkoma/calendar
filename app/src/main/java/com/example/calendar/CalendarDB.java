@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -242,45 +243,44 @@ public class CalendarDB extends SQLiteOpenHelper {
         return isHoliday;  // 공휴일 여부 반환
     }
 
+    public interface RepeatCallback {
+        void onRepeatCompleted();
+    }
+
     @SuppressLint("Range")
-    public void repeat() {
+    public void repeat(CalendarDB.RepeatCallback callback) {
         SQLiteDatabase db = this.getWritableDatabase();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
         try {
-            // 1. 저장된 근무형태의 첫째 날과 마지막 날을 가져오기
             String startDate = null;
             String endDate = null;
 
-            // 첫 번째 날짜 가져오기 (오름차순 정렬 후 첫 번째)
             Cursor cursorStart = db.query("calendar", new String[]{"date"}, "type IS NOT NULL", null, null, null, "date ASC", "1");
             if (cursorStart != null && cursorStart.moveToFirst()) {
                 startDate = cursorStart.getString(cursorStart.getColumnIndex("date"));
             }
             cursorStart.close();
 
-            // 마지막 날짜 가져오기 (내림차순 정렬 후 첫 번째)
             Cursor cursorEnd = db.query("calendar", new String[]{"date"}, "type IS NOT NULL", null, null, null, "date DESC", "1");
             if (cursorEnd != null && cursorEnd.moveToFirst()) {
                 endDate = cursorEnd.getString(cursorEnd.getColumnIndex("date"));
             }
             cursorEnd.close();
 
-            // 저장된 패턴을 가져오기 위해 두 날짜가 유효한지 확인
             if (startDate == null || endDate == null) {
                 Log.d("CalendarDB", "★ L208: No schedule to repeat.");
-                return; // 패턴이 없으면 함수 종료
+                db.close();
+                if (callback != null) callback.onRepeatCompleted(); // 콜백 호출
+                return;
             }
 
-            // 2. 첫째 날부터 마지막 날까지의 패턴을 반복
             Date start = sdf.parse(startDate);
             Date end = sdf.parse(endDate);
 
-            // 날짜 범위 내의 패턴을 가져옴
             Cursor patternCursor = db.query("calendar", new String[]{"date", "type"}, "date BETWEEN ? AND ? AND type IS NOT NULL",
                     new String[]{startDate, endDate}, null, null, "date ASC");
 
-            // 패턴을 리스트로 저장
             List<String> patternDates = new ArrayList<>();
             List<String> patternTypes = new ArrayList<>();
 
@@ -294,35 +294,58 @@ public class CalendarDB extends SQLiteOpenHelper {
                 patternCursor.close();
             }
 
-            // 3. 마지막 날짜 다음날부터 패턴을 3회 반복하여 저장
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(end);  // 마지막 날로 설정
-            calendar.add(Calendar.DAY_OF_MONTH, 1); // 마지막 날의 다음 날로 이동
+            calendar.setTime(end);
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+            AtomicInteger remainingCallbacks = new AtomicInteger(3 * patternDates.size());
 
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < patternDates.size(); j++) {
-                    String newDate = sdf.format(calendar.getTime()); // 새로운 날짜
-                    String type = patternTypes.get(j);  // 해당 날짜의 근무형태
+                    String newDate = sdf.format(calendar.getTime());
+                    String type = patternTypes.get(j);
 
-                    // 새로운 날짜와 패턴을 DB에 저장
-                    ContentValues values = new ContentValues();
-                    values.put("date", newDate);
-                    values.put("type", type);
-                    values.put("note", "");  // 메모는 공백으로 저장
-                    values.put("holiday", Boolean.FALSE);
+                    isHoliday(newDate, new HolidayCallback() {
+                        @Override
+                        public void onHolidayChecked(boolean isHoliday) {
+                            ContentValues values = new ContentValues();
+                            values.put("date", newDate);
+                            values.put("type", type);
+                            values.put("note", "");
+                            values.put("holiday", isHoliday);
 
-                    db.insertWithOnConflict("calendar", null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                            db.insertWithOnConflict("calendar", null, values, SQLiteDatabase.CONFLICT_REPLACE);
 
-                    calendar.add(Calendar.DAY_OF_MONTH, 1); // 하루씩 증가
+                            // 모든 콜백 완료 체크
+                            if (remainingCallbacks.decrementAndGet() == 0) {
+                                db.close(); // 모든 콜백 완료 후 DB 닫기
+                                if (callback != null) callback.onRepeatCompleted(); // 콜백 호출
+                            }
+                        }
+
+                        @Override
+                        public void onFailure() {
+                            Log.e("CalendarDB", "Failed to determine holiday status for date: " + newDate);
+
+                            // 모든 콜백 완료 체크
+                            if (remainingCallbacks.decrementAndGet() == 0) {
+                                db.close(); // 모든 콜백 완료 후 DB 닫기
+                                if (callback != null) callback.onRepeatCompleted(); // 콜백 호출
+                            }
+                        }
+                    });
+                    calendar.add(Calendar.DAY_OF_MONTH, 1);
                 }
             }
+            // 앞선 반복문에서 마지막에 하나 더해주는데, 이때 비동기적으로 처리돼서 type이 계산됨. 이를 방지해주기 위한 코드
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
 
             Log.d("CalendarDB", "★ L208: Schedule repeated 3 times.");
 
         } catch (ParseException e) {
             e.printStackTrace();
-        } finally {
-            db.close(); // 데이터베이스 닫기
+            db.close(); // 예외 발생 시 DB 닫기
+            if (callback != null) callback.onRepeatCompleted(); // 콜백 호출
         }
     }
 
