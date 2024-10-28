@@ -73,12 +73,34 @@ public class CalendarDB extends SQLiteOpenHelper {
     }
 
     public void isHoliday(String date, HolidayCallback callback) {
+        // 날짜가 주말인지 확인하는 로직 추가
+        boolean isWeekend = false;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date parsedDate = sdf.parse(date);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(parsedDate);
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+            if (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY) {
+                isWeekend = true;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (isWeekend) {
+            callback.onHolidayChecked(true);
+            return;
+        }
+
+        // 기존 공휴일 API 호출 로직 유지
         String solYear = date.substring(0, 4);
         String solMonth = date.substring(5, 7);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/")
-                .addConverterFactory(SimpleXmlConverterFactory.create()) // XML 파서 필요
+                .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build();
 
         HolidayAPI holidayApi = retrofit.create(HolidayAPI.class);
@@ -106,7 +128,6 @@ public class CalendarDB extends SQLiteOpenHelper {
                         }
                     }
 
-                    // 콜백으로 공휴일 정보를 전달
                     callback.onHolidayChecked(isHoliday);
                 } else {
                     Log.e("API_ERROR", "Response unsuccessful: " + response.message());
@@ -116,7 +137,7 @@ public class CalendarDB extends SQLiteOpenHelper {
 
             @Override
             public void onFailure(Call<HolidayResponse> call, Throwable t) {
-                Log.e("API_ERROR", "★ CalendarDB.java API 호출 실패: " + t.getMessage());
+                Log.e("API_ERROR", "API 호출 실패: " + t.getMessage());
                 callback.onFailure();
             }
         });
